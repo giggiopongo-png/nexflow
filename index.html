@@ -153,6 +153,80 @@ footer{border-top:1px solid var(--border);padding:2rem 3rem;display:flex;align-i
   footer{padding:1.5rem}
   .cta-s{padding:6rem 1.5rem}
 }
+
+/* ── MODAL OVERLAY ─────────────────────────────────── */
+#modal{position:fixed;inset:0;z-index:1000;display:flex;align-items:center;justify-content:center;pointer-events:none;opacity:0;transition:opacity .5s cubic-bezier(.16,1,.3,1)}
+#modal.open{opacity:1;pointer-events:all}
+#modal-bg{position:absolute;inset:0;background:rgba(6,6,10,.97);backdrop-filter:blur(24px);transform:scaleY(0);transform-origin:top;transition:transform .6s cubic-bezier(.16,1,.3,1)}
+#modal.open #modal-bg{transform:scaleY(1)}
+#modal-inner{position:relative;z-index:1;width:100%;max-width:680px;padding:0 2rem}
+#modal-close{position:fixed;top:2rem;right:2.5rem;background:none;border:none;color:var(--muted);font-family:'DM Mono',monospace;font-size:.7rem;letter-spacing:.15em;text-transform:uppercase;cursor:none;transition:color .2s;display:flex;align-items:center;gap:.5rem}
+#modal-close:hover{color:var(--paper)}
+#modal-close::before{content:'✕';font-size:1rem}
+
+/* PROGRESS */
+.m-progress{display:flex;gap:.4rem;margin-bottom:3rem}
+.m-prog-dot{height:2px;flex:1;background:var(--border);border-radius:2px;transition:background .4s}
+.m-prog-dot.done{background:var(--accent)}
+.m-prog-dot.active{background:var(--accent);animation:progPulse 1.5s ease-in-out infinite}
+@keyframes progPulse{0%,100%{opacity:1}50%{opacity:.5}}
+
+/* STEPS */
+.m-step{display:none;animation:stepIn .5s cubic-bezier(.16,1,.3,1)}
+.m-step.active{display:block}
+@keyframes stepIn{from{opacity:0;transform:translateX(40px)}to{opacity:1;transform:none}}
+
+.m-label{font-family:'DM Mono',monospace;font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;color:var(--accent);margin-bottom:.8rem}
+.m-title{font-size:clamp(1.6rem,4vw,2.8rem);font-weight:800;letter-spacing:-.04em;line-height:.95;margin-bottom:2.5rem}
+.m-title em{font-style:normal;color:var(--accent)}
+
+/* SERVICE CARDS */
+.srv-cards{display:grid;grid-template-columns:repeat(2,1fr);gap:.8rem}
+.srv-card{background:rgba(255,255,255,.03);border:1px solid var(--border);padding:1.5rem;cursor:none;transition:all .3s;border-radius:2px;text-align:left}
+.srv-card:hover{background:rgba(0,229,160,.05);border-color:rgba(0,229,160,.3);transform:translateY(-2px)}
+.srv-card.selected{background:rgba(0,229,160,.08);border-color:var(--accent)}
+.srv-card-icon{font-size:1.5rem;margin-bottom:.8rem;display:block}
+.srv-card-name{font-size:.9rem;font-weight:700;margin-bottom:.3rem}
+.srv-card-price{font-family:'DM Mono',monospace;font-size:.65rem;color:var(--accent);letter-spacing:.08em}
+
+/* INPUTS */
+.m-field{margin-bottom:1.4rem}
+.m-field label{display:block;font-family:'DM Mono',monospace;font-size:.62rem;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin-bottom:.5rem}
+.m-field input,.m-field textarea,.m-field select{width:100%;background:rgba(255,255,255,.04);border:1px solid var(--border);outline:none;padding:.85rem 1rem;font-family:'Syne',sans-serif;font-size:.85rem;color:var(--paper);border-radius:2px;transition:border-color .2s;-webkit-appearance:none}
+.m-field input:focus,.m-field textarea:focus,.m-field select:focus{border-color:rgba(0,229,160,.5)}
+.m-field input::placeholder,.m-field textarea::placeholder{color:rgba(240,239,233,.25)}
+.m-field textarea{resize:vertical;min-height:100px}
+.m-field select option{background:#0a0a0f;color:var(--paper)}
+
+/* CHECKBOX PILLS */
+.pill-grid{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:.4rem}
+.pill{font-family:'DM Mono',monospace;font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;padding:.45rem 1rem;border:1px solid var(--border);border-radius:20px;cursor:none;transition:all .25s;color:var(--muted)}
+.pill:hover{border-color:rgba(0,229,160,.4);color:var(--paper)}
+.pill.on{border-color:var(--accent);color:var(--accent);background:rgba(0,229,160,.06)}
+
+/* BUDGET SLIDER */
+.budget-display{font-size:2rem;font-weight:800;letter-spacing:-.04em;color:var(--accent);margin:.5rem 0 1rem}
+.m-range{-webkit-appearance:none;appearance:none;width:100%;height:3px;background:var(--border);border-radius:2px;outline:none;border:none;padding:0}
+.m-range::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--accent);cursor:none;border:2px solid var(--ink);box-shadow:0 0 0 4px rgba(0,229,160,.2)}
+
+/* BUTTONS */
+.m-btn{font-family:'Syne',sans-serif;font-size:.82rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ink);background:var(--accent);border:none;padding:.9rem 2.2rem;border-radius:2px;cursor:none;transition:transform .2s,box-shadow .2s;display:inline-block;margin-top:1.5rem}
+.m-btn:hover{transform:translateY(-2px);box-shadow:0 12px 28px rgba(0,229,160,.3)}
+.m-btn-ghost{font-family:'Syne',sans-serif;font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);background:none;border:none;cursor:none;margin-top:1.5rem;margin-right:1rem;transition:color .2s}
+.m-btn-ghost:hover{color:var(--paper)}
+
+/* SUCCESS */
+.m-success{text-align:center;padding:3rem 0}
+.m-success-icon{font-size:4rem;margin-bottom:1.5rem;display:block;animation:popIn .5s cubic-bezier(.16,1,.3,1)}
+@keyframes popIn{from{transform:scale(0) rotate(-20deg)}to{transform:scale(1) rotate(0)}}
+.m-success h2{font-size:2rem;font-weight:800;letter-spacing:-.04em;margin-bottom:.8rem}
+.m-success p{color:var(--muted);font-size:.9rem;line-height:1.7}
+
+@media(max-width:600px){
+  .srv-cards{grid-template-columns:1fr}
+  #modal-inner{padding:0 1.2rem}
+}
+
 </style>
 </head>
 <body>
@@ -466,6 +540,242 @@ const revObs=new IntersectionObserver(entries=>{
   entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');revObs.unobserve(e.target)}});
 },{threshold:.12});
 document.querySelectorAll('.reveal,.reveal-l').forEach(el=>revObs.observe(el));
+
+
+// ── MODAL ─────────────────────────────────────────────
+let currentStep=1, selectedService='', dynamicData={};
+
+const serviceFields = {
+  'Bot Telegram':{
+    pills:{label:'Funzionalità desiderate',options:['Admin panel','Database','Notifiche','Mini app','Pagamenti','Contest','Altro']},
+    budget:{min:500,max:3000,step:100,default:800},
+    desc:'Descrivi il bot che hai in mente'
+  },
+  'Automazione & Pipeline':{
+    pills:{label:'Tool da integrare',options:['Telegram','Google Sheets','Notion','Airtable','Webhook','API custom','Altro']},
+    budget:{min:800,max:5000,step:200,default:1500},
+    desc:'Quale processo vuoi automatizzare?'
+  },
+  'Pipeline AI':{
+    pills:{label:'Tipo di AI',options:['Generazione testo','Generazione immagini','Classificazione','Analisi dati','Chatbot','Altro']},
+    budget:{min:1000,max:8000,step:500,default:2000},
+    desc:'Cosa vuoi ottenere con l\'AI?'
+  },
+  'Manutenzione & Retainer':{
+    pills:{label:'Cosa gestire',options:['Bot esistente','Web app','VPS/Infrastruttura','Database','Aggiornamenti','Monitoring']},
+    budget:{min:200,max:1000,step:50,default:300},
+    desc:'Descrivi il progetto da mantenere'
+  }
+};
+
+function openModal(){
+  document.getElementById('modal').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+
+function closeModal(){
+  document.getElementById('modal').classList.remove('open');
+  document.body.style.overflow='';
+}
+
+const modalEl=document.getElementById('modal');
+if(modalEl) modalEl.addEventListener('click',e=>{
+  if(e.target===modalEl) closeModal();
+});
+
+document.addEventListener('keydown',e=>{if(e.key==='Escape') closeModal()});
+
+// Attach to all CTA buttons
+document.querySelectorAll('.nav-cta,.btn-p,.tg-btn').forEach(el=>{
+  if(!el.href || el.href.includes('servizi') || el.href.includes('t.me')) return;
+  el.addEventListener('click',e=>{e.preventDefault();openModal()});
+});
+// Nav cta and btn-p specifically
+document.querySelectorAll('.nav-cta,.btn-p').forEach(el=>{
+  el.addEventListener('click',e=>{e.preventDefault();openModal()});
+});
+
+function selectService(el, name){
+  document.querySelectorAll('.srv-card').forEach(c=>c.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedService = name;
+  setTimeout(()=>goStep(2), 320);
+}
+
+function goStep(n){
+  document.querySelectorAll('.m-step').forEach(s=>s.classList.remove('active'));
+  if(n===1) document.getElementById('s1').classList.add('active');
+  else if(n===2){
+    buildDynamicFields();
+    document.getElementById('s2').classList.add('active');
+  } else if(n===3){
+    collectDynamic();
+    document.getElementById('s3').classList.add('active');
+  }
+  currentStep=n;
+  updateProgress();
+}
+
+function updateProgress(){
+  [0,1,2].forEach(i=>{
+    const d=document.getElementById('pd'+i);
+    d.className='m-prog-dot';
+    if(i<currentStep-1) d.classList.add('done');
+    else if(i===currentStep-1) d.classList.add('active');
+  });
+}
+
+function buildDynamicFields(){
+  const cfg=serviceFields[selectedService];
+  if(!cfg) return;
+  let html=`
+    <div class="m-field">
+      <label>${cfg.pills.label}</label>
+      <div class="pill-grid">
+        ${cfg.pills.options.map(o=>`<span class="pill" onclick="this.classList.toggle('on')">${o}</span>`).join('')}
+      </div>
+    </div>
+    <div class="m-field">
+      <label>Budget indicativo</label>
+      <div class="budget-display" id="budget-val">€${cfg.budget.default.toLocaleString('it-IT')}</div>
+      <input type="range" class="m-range" id="budget-range" min="${cfg.budget.min}" max="${cfg.budget.max}" step="${cfg.budget.step}" value="${cfg.budget.default}" oninput="document.getElementById('budget-val').textContent='€'+parseInt(this.value).toLocaleString('it-IT')">
+      <div style="display:flex;justify-content:space-between;margin-top:.4rem;font-family:'DM Mono',monospace;font-size:.6rem;color:var(--muted)">
+        <span>€${cfg.budget.min.toLocaleString('it-IT')}</span><span>€${cfg.budget.max.toLocaleString('it-IT')}</span>
+      </div>
+    </div>
+    <div class="m-field">
+      <label>${cfg.desc}</label>
+      <textarea name="descrizione" placeholder="Più dettagli mi dai, meglio posso aiutarti..." rows="4"></textarea>
+    </div>
+  `;
+  document.getElementById('dynamic-fields').innerHTML=html;
+}
+
+function collectDynamic(){
+  const pills=[...document.querySelectorAll('.pill.on')].map(p=>p.textContent).join(', ');
+  const budget=document.getElementById('budget-range')?.value||'';
+  const desc=document.querySelector('#dynamic-fields textarea')?.value||'';
+  const summary=`Servizio: ${selectedService}\nFeature: ${pills||'—'}\nBudget: €${parseInt(budget).toLocaleString('it-IT')}\nDescrizione: ${desc}`;
+  document.getElementById('f-servizio').value=selectedService;
+  document.getElementById('f-dettagli').value=summary;
+}
+
+function handleSubmit(e){
+  e.preventDefault();
+  collectDynamic();
+  const form=document.getElementById('contact-form');
+  const data=new FormData(form);
+  const btn=form.querySelector('button[type=submit]');
+  if(btn){btn.disabled=true;btn.textContent='Invio in corso...';}
+  fetch('https://formspree.io/f/mojbnoyy',{method:'POST',body:data,headers:{'Accept':'application/json'}})
+    .then(r=>r.json())
+    .then(data=>{
+      if(data.ok){
+        document.querySelectorAll('.m-step').forEach(s=>s.classList.remove('active'));
+        document.getElementById('s-ok').classList.add('active');
+        document.querySelectorAll('.m-prog-dot').forEach(d=>{d.className='m-prog-dot done'});
+      } else {
+        if(btn){btn.disabled=false;btn.textContent='Invia richiesta ✓';}
+        alert('Errore: '+(data.error||'Scrivimi su Telegram @nexflow_it'));
+      }
+    })
+    .catch(()=>{
+      if(btn){btn.disabled=false;btn.textContent='Invia richiesta ✓';}
+      alert('Errore invio. Scrivimi direttamente su Telegram @nexflow_it');
+    });
+}
+
 </script>
+
+<!-- ── MODAL ──────────────────────────────────────────── -->
+<div id="modal">
+  <div id="modal-bg"></div>
+  <button id="modal-close" onclick="closeModal()">Chiudi</button>
+  <div id="modal-inner">
+
+    <div class="m-progress">
+      <div class="m-prog-dot active" id="pd0"></div>
+      <div class="m-prog-dot" id="pd1"></div>
+      <div class="m-prog-dot" id="pd2"></div>
+    </div>
+
+    <!-- STEP 1: scegli servizio -->
+    <div class="m-step active" id="s1">
+      <div class="m-label">/ Step 01</div>
+      <h2 class="m-title">Di cosa hai<br><em>bisogno?</em></h2>
+      <div class="srv-cards">
+        <div class="srv-card" onclick="selectService(this,'Bot Telegram')">
+          <span class="srv-card-icon">⚡</span>
+          <div class="srv-card-name">Bot Telegram</div>
+          <div class="srv-card-price">Da 500€</div>
+        </div>
+        <div class="srv-card" onclick="selectService(this,'Automazione & Pipeline')">
+          <span class="srv-card-icon">🔄</span>
+          <div class="srv-card-name">Automazione & Pipeline</div>
+          <div class="srv-card-price">Da 800€</div>
+        </div>
+        <div class="srv-card" onclick="selectService(this,'Pipeline AI')">
+          <span class="srv-card-icon">🤖</span>
+          <div class="srv-card-name">Pipeline AI</div>
+          <div class="srv-card-price">Da 1.000€</div>
+        </div>
+        <div class="srv-card" onclick="selectService(this,'Manutenzione & Retainer')">
+          <span class="srv-card-icon">🛠</span>
+          <div class="srv-card-name">Manutenzione & Retainer</div>
+          <div class="srv-card-price">Da 200€/mese</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 2: dettagli dinamici -->
+    <div class="m-step" id="s2">
+      <div class="m-label">/ Step 02</div>
+      <h2 class="m-title">Dimmi di<br><em>più.</em></h2>
+      <div id="dynamic-fields"></div>
+      <div style="display:flex;align-items:center;flex-wrap:wrap">
+        <button class="m-btn-ghost" onclick="goStep(1)">← Indietro</button>
+        <button class="m-btn" onclick="goStep(3)">Continua →</button>
+      </div>
+    </div>
+
+    <!-- STEP 3: contatti -->
+    <div class="m-step" id="s3">
+      <div class="m-label">/ Step 03</div>
+      <h2 class="m-title">Come ti<br><em>contatto?</em></h2>
+      <form id="contact-form" action="https://formspree.io/f/mojbnoyy" method="POST" onsubmit="handleSubmit(event)">
+        <input type="hidden" name="servizio" id="f-servizio">
+        <input type="hidden" name="dettagli" id="f-dettagli">
+        <div class="m-field">
+          <label>Nome</label>
+          <input type="text" name="nome" placeholder="Mario Rossi" required>
+        </div>
+        <div class="m-field">
+          <label>Email</label>
+          <input type="email" name="email" placeholder="mario@esempio.it" required>
+        </div>
+        <div class="m-field">
+          <label>Telegram (opzionale)</label>
+          <input type="text" name="telegram" placeholder="@username">
+        </div>
+        <div style="display:flex;align-items:center;flex-wrap:wrap">
+          <button type="button" class="m-btn-ghost" onclick="goStep(2)">← Indietro</button>
+          <button type="submit" class="m-btn">Invia richiesta ✓</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- SUCCESS -->
+    <div class="m-step" id="s-ok">
+      <div class="m-success">
+        <span class="m-success-icon">✅</span>
+        <h2>Richiesta inviata!</h2>
+        <p>Ti rispondo entro 24 ore.<br>Nel frattempo puoi scrivermi su <a href="https://t.me/nexflow_it" target="_blank" style="color:var(--accent)">@nexflow_it</a></p>
+        <button class="m-btn" onclick="closeModal()" style="margin-top:2rem">Chiudi</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
 </body>
 </html>
