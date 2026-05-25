@@ -6,484 +6,162 @@
 <title>Nexflow — Automazioni AI</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  :root {
-    --ink: #0a0a0f;
-    --paper: #f5f4f0;
-    --accent: #00e5a0;
-    --accent2: #7b5cfa;
-    --muted: #888;
-    --border: rgba(255,255,255,0.08);
-  }
-  html { scroll-behavior: smooth; }
-  body {
-    font-family: 'Syne', sans-serif;
-    background: var(--ink);
-    color: var(--paper);
-    overflow-x: hidden;
-    cursor: none;
-  }
-  #cursor {
-    position: fixed;
-    width: 10px; height: 10px;
-    background: var(--accent);
-    border-radius: 50%;
-    pointer-events: none;
-    z-index: 9999;
-    transition: transform 0.15s ease, opacity 0.2s;
-    mix-blend-mode: exclusion;
-  }
-  #cursor-ring {
-    position: fixed;
-    width: 36px; height: 36px;
-    border: 1.5px solid var(--accent);
-    border-radius: 50%;
-    pointer-events: none;
-    z-index: 9998;
-    transition: transform 0.35s cubic-bezier(0.25,0.46,0.45,0.94), width 0.3s, height 0.3s, opacity 0.2s;
-    mix-blend-mode: exclusion;
-    opacity: 0.6;
-  }
-  nav {
-    position: fixed;
-    top: 0; left: 0; right: 0;
-    z-index: 100;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 1.5rem 3rem;
-    border-bottom: 1px solid var(--border);
-    backdrop-filter: blur(16px);
-    background: rgba(10,10,15,0.7);
-  }
-  .logo {
-    font-size: 1.1rem;
-    font-weight: 800;
-    letter-spacing: -0.02em;
-    color: var(--paper);
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-  .logo-dot {
-    width: 8px; height: 8px;
-    background: var(--accent);
-    border-radius: 50%;
-    animation: pulse 2s infinite;
-  }
-  @keyframes pulse {
-    0%, 100% { opacity: 1; transform: scale(1); }
-    50% { opacity: 0.5; transform: scale(0.7); }
-  }
-  .nav-links {
-    display: flex;
-    gap: 2.5rem;
-    list-style: none;
-    font-size: 0.8rem;
-    font-weight: 400;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--muted);
-  }
-  .nav-links a { color: inherit; text-decoration: none; transition: color 0.2s; }
-  .nav-links a:hover { color: var(--paper); }
-  .nav-cta {
-    font-size: 0.8rem;
-    font-weight: 700;
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
-    color: var(--ink);
-    background: var(--accent);
-    padding: 0.6rem 1.4rem;
-    border-radius: 2px;
-    text-decoration: none;
-    transition: transform 0.2s, box-shadow 0.2s;
-  }
-  .nav-cta:hover { transform: translateY(-1px); box-shadow: 0 8px 24px rgba(0,229,160,0.25); }
-  .hero {
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    padding: 8rem 3rem 4rem;
-    position: relative;
-    overflow: hidden;
-  }
-  canvas#bg {
-    position: absolute;
-    inset: 0;
-    opacity: 0.25;
-    pointer-events: none;
-  }
-  .hero-label {
-    font-family: 'DM Mono', monospace;
-    font-size: 0.7rem;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: var(--accent);
-    margin-bottom: 1.5rem;
-    display: flex;
-    align-items: center;
-    gap: 0.8rem;
-  }
-  .hero-label::before {
-    content: '';
-    display: inline-block;
-    width: 24px; height: 1px;
-    background: var(--accent);
-  }
-  .hero-title {
-    font-size: clamp(3rem, 8vw, 7rem);
-    font-weight: 800;
-    line-height: 0.92;
-    letter-spacing: -0.04em;
-    max-width: 12ch;
-    position: relative;
-    z-index: 1;
-  }
-  .hero-title em {
-    font-style: normal;
-    color: transparent;
-    -webkit-text-stroke: 1px var(--accent);
-  }
-  .hero-sub {
-    margin-top: 2.5rem;
-    font-size: 1rem;
-    font-weight: 400;
-    color: var(--muted);
-    max-width: 40ch;
-    line-height: 1.7;
-    position: relative;
-    z-index: 1;
-  }
-  .hero-actions {
-    margin-top: 3rem;
-    display: flex;
-    gap: 1rem;
-    align-items: center;
-    position: relative;
-    z-index: 1;
-    flex-wrap: wrap;
-  }
-  .btn-primary {
-    font-family: 'Syne', sans-serif;
-    font-size: 0.85rem;
-    font-weight: 700;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: var(--ink);
-    background: var(--accent);
-    border: none;
-    padding: 1rem 2.2rem;
-    border-radius: 2px;
-    cursor: pointer;
-    text-decoration: none;
-    transition: transform 0.2s, box-shadow 0.2s;
-    display: inline-block;
-  }
-  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 12px 32px rgba(0,229,160,0.3); }
-  .btn-ghost {
-    font-family: 'Syne', sans-serif;
-    font-size: 0.85rem;
-    font-weight: 400;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: var(--muted);
-    background: transparent;
-    border: none;
-    cursor: pointer;
-    text-decoration: none;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    transition: color 0.2s;
-  }
-  .btn-ghost:hover { color: var(--paper); }
-  .btn-ghost::after { content: '→'; transition: transform 0.2s; }
-  .btn-ghost:hover::after { transform: translateX(4px); }
-  .hero-scroll {
-    position: absolute;
-    bottom: 2.5rem;
-    left: 50%;
-    transform: translateX(-50%);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.5rem;
-    font-family: 'DM Mono', monospace;
-    font-size: 0.65rem;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    color: var(--muted);
-  }
-  .scroll-line {
-    width: 1px; height: 40px;
-    background: linear-gradient(to bottom, var(--accent), transparent);
-    animation: scrollAnim 1.8s ease-in-out infinite;
-  }
-  @keyframes scrollAnim {
-    0% { transform: scaleY(0); transform-origin: top; }
-    50% { transform: scaleY(1); transform-origin: top; }
-    51% { transform: scaleY(1); transform-origin: bottom; }
-    100% { transform: scaleY(0); transform-origin: bottom; }
-  }
-  .marquee-wrap {
-    border-top: 1px solid var(--border);
-    border-bottom: 1px solid var(--border);
-    padding: 1rem 0;
-    overflow: hidden;
-    background: rgba(255,255,255,0.02);
-  }
-  .marquee-track {
-    display: flex;
-    gap: 3rem;
-    animation: marquee 18s linear infinite;
-    white-space: nowrap;
-  }
-  @keyframes marquee {
-    from { transform: translateX(0); }
-    to { transform: translateX(-50%); }
-  }
-  .marquee-item {
-    font-family: 'DM Mono', monospace;
-    font-size: 0.7rem;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    color: var(--muted);
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    flex-shrink: 0;
-  }
-  .marquee-item span {
-    width: 4px; height: 4px;
-    background: var(--accent);
-    border-radius: 50%;
-    display: inline-block;
-  }
-  .section { padding: 8rem 3rem; position: relative; }
-  .section-header {
-    display: flex;
-    align-items: flex-end;
-    justify-content: space-between;
-    margin-bottom: 4rem;
-    gap: 2rem;
-    flex-wrap: wrap;
-  }
-  .section-label {
-    font-family: 'DM Mono', monospace;
-    font-size: 0.65rem;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: var(--accent);
-    margin-bottom: 0.8rem;
-  }
-  .section-title {
-    font-size: clamp(2rem, 4vw, 3.2rem);
-    font-weight: 800;
-    letter-spacing: -0.03em;
-    line-height: 1;
-  }
-  .section-desc {
-    font-size: 0.9rem;
-    color: var(--muted);
-    max-width: 30ch;
-    line-height: 1.7;
-    text-align: right;
-  }
-  .services-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 1px;
-    background: var(--border);
-    border: 1px solid var(--border);
-  }
-  .service-card {
-    background: var(--ink);
-    padding: 2.5rem;
-    transition: background 0.3s;
-    position: relative;
-    overflow: hidden;
-  }
-  .service-card::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: radial-gradient(circle at 0% 100%, rgba(0,229,160,0.06) 0%, transparent 60%);
-    opacity: 0;
-    transition: opacity 0.4s;
-  }
-  .service-card:hover::before { opacity: 1; }
-  .service-card:hover { background: rgba(255,255,255,0.02); }
-  .service-num {
-    font-family: 'DM Mono', monospace;
-    font-size: 0.65rem;
-    color: var(--accent);
-    letter-spacing: 0.15em;
-    margin-bottom: 2rem;
-  }
-  .service-icon { font-size: 1.8rem; margin-bottom: 1.2rem; display: block; }
-  .service-name { font-size: 1.15rem; font-weight: 700; margin-bottom: 0.8rem; letter-spacing: -0.01em; }
-  .service-desc { font-size: 0.85rem; color: var(--muted); line-height: 1.7; margin-bottom: 1.5rem; }
-  .service-price {
-    font-family: 'DM Mono', monospace;
-    font-size: 0.75rem;
-    color: var(--accent);
-    letter-spacing: 0.08em;
-    border-top: 1px solid var(--border);
-    padding-top: 1.2rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  .stats-row {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-    gap: 1px;
-    background: var(--border);
-    border: 1px solid var(--border);
-    margin: 5rem 0;
-  }
-  .stat-block { background: var(--ink); padding: 2.5rem; text-align: center; }
-  .stat-num { font-size: 3rem; font-weight: 800; letter-spacing: -0.04em; color: var(--paper); display: block; }
-  .stat-num em { font-style: normal; color: var(--accent); }
-  .stat-label {
-    font-family: 'DM Mono', monospace;
-    font-size: 0.65rem;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    color: var(--muted);
-    margin-top: 0.5rem;
-    display: block;
-  }
-  .process-list { display: flex; flex-direction: column; gap: 0; border: 1px solid var(--border); }
-  .process-item {
-    display: grid;
-    grid-template-columns: 80px 1fr auto;
-    align-items: center;
-    gap: 2rem;
-    padding: 2rem 2.5rem;
-    border-bottom: 1px solid var(--border);
-    transition: background 0.2s;
-  }
-  .process-item:last-child { border-bottom: none; }
-  .process-item:hover { background: rgba(255,255,255,0.02); }
-  .process-n {
-    font-family: 'DM Mono', monospace;
-    font-size: 2rem;
-    font-weight: 300;
-    color: rgba(255,255,255,0.08);
-    letter-spacing: -0.05em;
-    transition: color 0.3s;
-  }
-  .process-item:hover .process-n { color: var(--accent); }
-  .process-text h3 { font-size: 1rem; font-weight: 700; margin-bottom: 0.3rem; }
-  .process-text p { font-size: 0.82rem; color: var(--muted); line-height: 1.6; }
-  .process-tag {
-    font-family: 'DM Mono', monospace;
-    font-size: 0.65rem;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--accent);
-    white-space: nowrap;
-  }
-  .cta-section { padding: 8rem 3rem; text-align: center; position: relative; overflow: hidden; }
-  .cta-bg {
-    position: absolute;
-    inset: 0;
-    background: radial-gradient(ellipse 80% 50% at 50% 100%, rgba(123,92,250,0.12) 0%, transparent 70%);
-    pointer-events: none;
-  }
-  .cta-title {
-    font-size: clamp(2.5rem, 6vw, 5rem);
-    font-weight: 800;
-    letter-spacing: -0.04em;
-    line-height: 0.95;
-    margin-bottom: 1.5rem;
-    position: relative;
-    z-index: 1;
-  }
-  .cta-title em { font-style: normal; color: var(--accent2); }
-  .cta-sub { font-size: 0.9rem; color: var(--muted); margin-bottom: 3rem; position: relative; z-index: 1; }
-  .cta-email {
-    display: flex;
-    max-width: 440px;
-    margin: 0 auto;
-    border: 1px solid var(--border);
-    position: relative;
-    z-index: 1;
-  }
-  .cta-email input {
-    flex: 1;
-    background: rgba(255,255,255,0.04);
-    border: none;
-    outline: none;
-    padding: 1rem 1.2rem;
-    font-family: 'DM Mono', monospace;
-    font-size: 0.8rem;
-    color: var(--paper);
-    letter-spacing: 0.05em;
-  }
-  .cta-email input::placeholder { color: var(--muted); }
-  .cta-email button {
-    font-family: 'Syne', sans-serif;
-    font-size: 0.75rem;
-    font-weight: 700;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    background: var(--accent);
-    color: var(--ink);
-    border: none;
-    padding: 1rem 1.5rem;
-    cursor: pointer;
-    transition: background 0.2s;
-    white-space: nowrap;
-  }
-  .cta-email button:hover { background: #00ffb3; }
-  footer {
-    border-top: 1px solid var(--border);
-    padding: 2rem 3rem;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 1rem;
-  }
-  .footer-copy { font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.1em; color: var(--muted); }
-  .footer-links { display: flex; gap: 2rem; list-style: none; }
-  .footer-links a {
-    font-family: 'DM Mono', monospace;
-    font-size: 0.65rem;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--muted);
-    text-decoration: none;
-    transition: color 0.2s;
-  }
-  .footer-links a:hover { color: var(--accent); }
-  .fade-in { opacity: 0; transform: translateY(24px); transition: opacity 0.7s ease, transform 0.7s ease; }
-  .fade-in.visible { opacity: 1; transform: none; }
-  @media (max-width: 768px) {
-    nav { padding: 1.2rem 1.5rem; }
-    .nav-links { display: none; }
-    .hero { padding: 7rem 1.5rem 3rem; }
-    .section { padding: 5rem 1.5rem; }
-    .process-item { grid-template-columns: 50px 1fr; }
-    .process-tag { display: none; }
-    footer { padding: 1.5rem; }
-  }
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --ink:#06060a;
+  --paper:#f0efe9;
+  --accent:#00e5a0;
+  --accent2:#7b5cfa;
+  --muted:rgba(240,239,233,0.4);
+  --border:rgba(240,239,233,0.08);
+}
+html{scroll-behavior:smooth}
+body{font-family:'Syne',sans-serif;background:var(--ink);color:var(--paper);overflow-x:hidden;cursor:none}
+
+/* CURSOR */
+#cur{position:fixed;pointer-events:none;z-index:9999;mix-blend-mode:exclusion;top:0;left:0}
+#cur-dot{width:8px;height:8px;background:var(--accent);border-radius:50%;position:absolute;transform:translate(-50%,-50%)}
+#cur-ring{width:40px;height:40px;border:1px solid var(--accent);border-radius:50%;position:absolute;transform:translate(-50%,-50%);transition:width .4s cubic-bezier(.25,.46,.45,.94),height .4s cubic-bezier(.25,.46,.45,.94),opacity .3s;opacity:.5}
+#cur-trail{position:fixed;pointer-events:none;z-index:9998;top:0;left:0}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:1.4rem 3rem;border-bottom:1px solid var(--border);backdrop-filter:blur(20px);background:rgba(6,6,10,0.6)}
+.logo{font-size:1rem;font-weight:800;letter-spacing:-0.02em;display:flex;align-items:center;gap:8px;color:var(--paper)}
+.logo-dot{width:7px;height:7px;background:var(--accent);border-radius:50%;animation:blink 2s infinite}
+@keyframes blink{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.6)}}
+.nav-links{display:flex;gap:2.5rem;list-style:none;font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.nav-links a{color:inherit;text-decoration:none;transition:color .2s}
+.nav-links a:hover{color:var(--paper)}
+.nav-cta{font-size:.75rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ink);background:var(--accent);padding:.55rem 1.3rem;border-radius:2px;text-decoration:none;transition:transform .2s,box-shadow .2s}
+.nav-cta:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(0,229,160,.3)}
+
+/* HERO */
+.hero{height:100vh;display:flex;flex-direction:column;justify-content:flex-end;padding:0 3rem 5rem;position:relative;overflow:hidden}
+#three-canvas{position:absolute;inset:0;z-index:0}
+.hero-content{position:relative;z-index:2}
+.hero-tag{font-family:'DM Mono',monospace;font-size:.65rem;letter-spacing:.2em;text-transform:uppercase;color:var(--accent);margin-bottom:1.2rem;display:flex;align-items:center;gap:.8rem;opacity:0;animation:fadeUp .8s .3s forwards}
+.hero-tag::before{content:'';width:20px;height:1px;background:var(--accent)}
+.hero-title{font-size:clamp(3.5rem,9vw,8rem);font-weight:800;line-height:.88;letter-spacing:-.05em;overflow:hidden}
+.hero-title .line{display:block;transform:translateY(110%);animation:slideUp .9s cubic-bezier(.16,1,.3,1) forwards}
+.hero-title .line:nth-child(1){animation-delay:.5s}
+.hero-title .line:nth-child(2){animation-delay:.65s}
+.hero-title em{font-style:normal;color:transparent;-webkit-text-stroke:1.5px var(--accent)}
+.hero-bottom{display:flex;align-items:flex-end;justify-content:space-between;margin-top:3rem;opacity:0;animation:fadeUp .8s 1s forwards;flex-wrap:wrap;gap:2rem}
+.hero-sub{font-size:.9rem;color:var(--muted);max-width:36ch;line-height:1.7}
+.hero-actions{display:flex;gap:1rem;align-items:center}
+.btn-p{font-family:'Syne',sans-serif;font-size:.8rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--ink);background:var(--accent);border:none;padding:.9rem 2rem;border-radius:2px;text-decoration:none;display:inline-block;transition:transform .2s,box-shadow .2s}
+.btn-p:hover{transform:translateY(-2px);box-shadow:0 12px 32px rgba(0,229,160,.3)}
+.btn-g{font-family:'Syne',sans-serif;font-size:.8rem;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);text-decoration:none;display:flex;align-items:center;gap:.4rem;transition:color .2s}
+.btn-g:hover{color:var(--paper)}
+.btn-g::after{content:'→';transition:transform .2s}
+.btn-g:hover::after{transform:translateX(4px)}
+.hero-scroll-hint{position:absolute;bottom:2rem;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:.4rem;font-family:'DM Mono',monospace;font-size:.6rem;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);z-index:2;opacity:0;animation:fadeUp .6s 1.4s forwards}
+.scroll-bar{width:1px;height:36px;background:linear-gradient(var(--accent),transparent);animation:scrollPulse 1.8s ease-in-out infinite}
+@keyframes scrollPulse{0%{transform:scaleY(0);transform-origin:top}50%{transform:scaleY(1);transform-origin:top}51%{transform:scaleY(1);transform-origin:bottom}100%{transform:scaleY(0);transform-origin:bottom}}
+@keyframes slideUp{to{transform:translateY(0)}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
+
+/* MARQUEE */
+.mq-wrap{border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:.9rem 0;overflow:hidden;background:rgba(255,255,255,.015);position:relative;z-index:3}
+.mq-track{display:flex;gap:2.5rem;animation:mq 20s linear infinite;white-space:nowrap}
+@keyframes mq{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+.mq-item{font-family:'DM Mono',monospace;font-size:.65rem;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);display:flex;align-items:center;gap:.8rem;flex-shrink:0}
+.mq-dot{width:3px;height:3px;background:var(--accent);border-radius:50%;display:inline-block}
+
+/* SECTIONS */
+.s{padding:9rem 3rem;position:relative}
+.s-label{font-family:'DM Mono',monospace;font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;color:var(--accent);margin-bottom:.8rem}
+.s-title{font-size:clamp(2rem,4.5vw,3.5rem);font-weight:800;letter-spacing:-.04em;line-height:.95}
+
+/* SERVICES */
+.srv-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:var(--border);border:1px solid var(--border);margin-top:4rem}
+.srv{background:var(--ink);padding:3rem;position:relative;overflow:hidden;transition:background .4s}
+.srv::after{content:'';position:absolute;inset:0;background:radial-gradient(circle at 0 100%,rgba(0,229,160,.07),transparent 60%);opacity:0;transition:opacity .5s}
+.srv:hover::after{opacity:1}
+.srv:hover{background:rgba(255,255,255,.018)}
+.srv-n{font-family:'DM Mono',monospace;font-size:.6rem;color:var(--accent);letter-spacing:.15em;margin-bottom:2.5rem}
+.srv-icon{font-size:2rem;margin-bottom:1.5rem;display:block;transition:transform .4s}
+.srv:hover .srv-icon{transform:scale(1.1) rotate(-5deg)}
+.srv-name{font-size:1.2rem;font-weight:700;margin-bottom:.8rem;letter-spacing:-.02em}
+.srv-desc{font-size:.83rem;color:var(--muted);line-height:1.75;margin-bottom:2rem}
+.srv-price{font-family:'DM Mono',monospace;font-size:.72rem;color:var(--accent);border-top:1px solid var(--border);padding-top:1.2rem;display:flex;justify-content:space-between}
+
+/* STATS */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);border:1px solid var(--border);margin:6rem 0 0}
+.stat{background:var(--ink);padding:2.5rem;text-align:center}
+.stat-n{font-size:2.8rem;font-weight:800;letter-spacing:-.05em;display:block}
+.stat-n em{font-style:normal;color:var(--accent)}
+.stat-l{font-family:'DM Mono',monospace;font-size:.6rem;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin-top:.4rem;display:block}
+
+/* HORIZONTAL SCROLL SECTION */
+.hscroll-outer{height:300vh;position:relative}
+.hscroll-sticky{position:sticky;top:0;height:100vh;overflow:hidden;display:flex;align-items:center}
+.hscroll-track{display:flex;gap:2px;will-change:transform}
+.hcard{min-width:420px;height:80vh;background:var(--ink);border:1px solid var(--border);padding:3.5rem;display:flex;flex-direction:column;justify-content:flex-end;position:relative;overflow:hidden;flex-shrink:0}
+.hcard-num{position:absolute;top:2.5rem;right:2.5rem;font-family:'DM Mono',monospace;font-size:4rem;font-weight:300;color:rgba(255,255,255,.04);letter-spacing:-.05em}
+.hcard-icon{font-size:2.5rem;margin-bottom:auto;padding-top:2rem}
+.hcard-title{font-size:1.4rem;font-weight:800;letter-spacing:-.03em;margin-bottom:.6rem}
+.hcard-desc{font-size:.82rem;color:var(--muted);line-height:1.7}
+.hcard-tag{font-family:'DM Mono',monospace;font-size:.62rem;color:var(--accent);letter-spacing:.12em;text-transform:uppercase;margin-top:1.5rem}
+.hcard:nth-child(odd){background:rgba(255,255,255,.015)}
+
+/* PROCESS */
+.proc-list{margin-top:4rem;border:1px solid var(--border)}
+.proc{display:grid;grid-template-columns:6rem 1fr 8rem;gap:2rem;align-items:center;padding:2rem 2.5rem;border-bottom:1px solid var(--border);transition:background .2s}
+.proc:last-child{border-bottom:none}
+.proc:hover{background:rgba(255,255,255,.02)}
+.proc-n{font-family:'DM Mono',monospace;font-size:1.8rem;font-weight:300;color:rgba(255,255,255,.06);transition:color .3s}
+.proc:hover .proc-n{color:var(--accent)}
+.proc h3{font-size:.95rem;font-weight:700;margin-bottom:.3rem}
+.proc p{font-size:.8rem;color:var(--muted);line-height:1.6}
+.proc-time{font-family:'DM Mono',monospace;font-size:.62rem;color:var(--accent);text-align:right;letter-spacing:.1em;text-transform:uppercase}
+
+/* CTA */
+.cta-s{padding:10rem 3rem;text-align:center;position:relative;overflow:hidden}
+.cta-glow{position:absolute;bottom:-20%;left:50%;transform:translateX(-50%);width:60%;height:400px;background:radial-gradient(ellipse,rgba(123,92,250,.15) 0%,transparent 70%);pointer-events:none}
+.cta-title{font-size:clamp(3rem,7vw,6rem);font-weight:800;letter-spacing:-.05em;line-height:.9;margin-bottom:1.5rem;position:relative;z-index:1}
+.cta-title em{font-style:normal;color:var(--accent2)}
+.cta-sub{font-size:.9rem;color:var(--muted);margin-bottom:3rem;position:relative;z-index:1}
+.tg-btn{display:inline-flex;align-items:center;gap:.8rem;font-family:'Syne',sans-serif;font-size:.9rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ink);background:var(--accent);padding:1.1rem 2.5rem;border-radius:2px;text-decoration:none;transition:transform .2s,box-shadow .2s;position:relative;z-index:1}
+.tg-btn:hover{transform:translateY(-2px);box-shadow:0 16px 40px rgba(0,229,160,.3)}
+.tg-icon{width:18px;height:18px;fill:currentColor}
+
+/* FOOTER */
+footer{border-top:1px solid var(--border);padding:2rem 3rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem}
+.f-copy{font-family:'DM Mono',monospace;font-size:.62rem;letter-spacing:.1em;color:var(--muted)}
+.f-links{display:flex;gap:2rem;list-style:none}
+.f-links a{font-family:'DM Mono',monospace;font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);text-decoration:none;transition:color .2s}
+.f-links a:hover{color:var(--accent)}
+
+/* REVEAL */
+.reveal{opacity:0;transform:translateY(30px);transition:opacity .8s ease,transform .8s ease}
+.reveal.in{opacity:1;transform:none}
+.reveal-l{opacity:0;transform:translateX(-30px);transition:opacity .8s ease,transform .8s ease}
+.reveal-l.in{opacity:1;transform:none}
+
+/* RESPONSIVE */
+@media(max-width:900px){
+  nav{padding:1.2rem 1.5rem}
+  .nav-links{display:none}
+  .hero{padding:0 1.5rem 4rem}
+  .s{padding:5rem 1.5rem}
+  .srv-grid{grid-template-columns:1fr}
+  .stats{grid-template-columns:repeat(2,1fr)}
+  .hcard{min-width:85vw}
+  .proc{grid-template-columns:4rem 1fr}
+  .proc-time{display:none}
+  footer{padding:1.5rem}
+  .cta-s{padding:6rem 1.5rem}
+}
 </style>
 </head>
 <body>
 
-<div id="cursor"></div>
-<div id="cursor-ring"></div>
+<div id="cur"><div id="cur-dot"></div><div id="cur-ring"></div></div>
+<canvas id="cur-trail" style="position:fixed;inset:0;pointer-events:none;z-index:9997;mix-blend-mode:screen"></canvas>
 
 <nav>
-  <div class="logo">
-    <div class="logo-dot"></div>
-    Nexflow
-  </div>
+  <div class="logo"><div class="logo-dot"></div>Nexflow</div>
   <ul class="nav-links">
     <li><a href="#servizi">Servizi</a></li>
     <li><a href="#processo">Processo</a></li>
@@ -493,185 +171,301 @@
 </nav>
 
 <section class="hero">
-  <canvas id="bg"></canvas>
-  <div class="hero-label">Automazione · AI · Infrastruttura</div>
-  <h1 class="hero-title">
-    Il tuo business,<br>
-    <em>automatizzato.</em>
-  </h1>
-  <p class="hero-sub">
-    Bot, automazioni e pipeline AI per chi vuole far girare il proprio business senza fare tutto a mano.
-  </p>
-  <div class="hero-actions">
-    <a href="#contatto" class="btn-primary">Parliamo del tuo progetto</a>
-    <a href="#servizi" class="btn-ghost">Scopri i servizi</a>
+  <canvas id="three-canvas"></canvas>
+  <div class="hero-content">
+    <div class="hero-tag">Automazione · AI · Infrastruttura</div>
+    <h1 class="hero-title">
+      <span class="line">Il tuo business,</span>
+      <span class="line"><em>automatizzato.</em></span>
+    </h1>
+    <div class="hero-bottom">
+      <p class="hero-sub">Bot, automazioni e pipeline AI per chi vuole far girare il proprio business senza fare tutto a mano.</p>
+      <div class="hero-actions">
+        <a href="#contatto" class="btn-p">Parliamo del tuo progetto</a>
+        <a href="#servizi" class="btn-g">Scopri i servizi</a>
+      </div>
+    </div>
   </div>
-  <div class="hero-scroll">
-    <div class="scroll-line"></div>
-    Scroll
+  <div class="hero-scroll-hint"><div class="scroll-bar"></div>Scroll</div>
+</section>
+
+<div class="mq-wrap"><div class="mq-track" id="mq"></div></div>
+
+<section class="s" id="servizi">
+  <div class="reveal">
+    <div class="s-label">/ Cosa facciamo</div>
+    <h2 class="s-title">Servizi</h2>
+  </div>
+  <div class="srv-grid">
+    <div class="srv reveal">
+      <div class="srv-n">01</div>
+      <span class="srv-icon">⚡</span>
+      <div class="srv-name">Bot Telegram custom</div>
+      <p class="srv-desc">Bot avanzati con admin panel, database, notifiche, mini app e logica di business complessa.</p>
+      <div class="srv-price"><span>Da 500€</span><span>One-shot →</span></div>
+    </div>
+    <div class="srv reveal">
+      <div class="srv-n">02</div>
+      <span class="srv-icon">🔄</span>
+      <div class="srv-name">Automazioni & pipeline</div>
+      <p class="srv-desc">Collega tool, elimina processi manuali ripetitivi. Integrazione API, webhook, schedulatori.</p>
+      <div class="srv-price"><span>Da 800€</span><span>One-shot →</span></div>
+    </div>
+    <div class="srv reveal">
+      <div class="srv-n">03</div>
+      <span class="srv-icon">🤖</span>
+      <div class="srv-name">Pipeline AI</div>
+      <p class="srv-desc">Integrazione di modelli AI nel tuo flusso di lavoro. Generazione contenuti, classificazione, analisi.</p>
+      <div class="srv-price"><span>Da 1.000€</span><span>Progetto →</span></div>
+    </div>
+    <div class="srv reveal">
+      <div class="srv-n">04</div>
+      <span class="srv-icon">🛠</span>
+      <div class="srv-name">Manutenzione & retainer</div>
+      <p class="srv-desc">Supporto continuativo, aggiornamenti, monitoring. Tu pensi al business, io penso alla tech.</p>
+      <div class="srv-price"><span>Da 200€/mese</span><span>Abbonamento →</span></div>
+    </div>
+  </div>
+  <div class="stats">
+    <div class="stat reveal"><span class="stat-n">1k<em>+</em></span><span class="stat-l">Fatturato clienti</span></div>
+    <div class="stat reveal"><span class="stat-n">h<em>24</em></span><span class="stat-l">Bot attivi</span></div>
+    <div class="stat reveal"><span class="stat-n">3<em>+</em></span><span class="stat-l">Anni esperienza</span></div>
+    <div class="stat reveal"><span class="stat-n">IT<em>🇮🇹</em></span><span class="stat-l">Mercato principale</span></div>
   </div>
 </section>
 
-<div class="marquee-wrap">
-  <div class="marquee-track" id="marquee"></div>
+<!-- HORIZONTAL SCROLL -->
+<div class="hscroll-outer" id="hscroll">
+  <div class="hscroll-sticky">
+    <div class="hscroll-track" id="htrack">
+      <div class="hcard">
+        <div class="hcard-num">01</div>
+        <div class="hcard-icon">⚡</div>
+        <div>
+          <div class="hcard-title">Velocità reale</div>
+          <p class="hcard-desc">Niente meeting infiniti. Dal briefing al deploy in 3-14 giorni lavorativi.</p>
+          <div class="hcard-tag">Fast delivery</div>
+        </div>
+      </div>
+      <div class="hcard">
+        <div class="hcard-num">02</div>
+        <div class="hcard-icon">🔐</div>
+        <div>
+          <div class="hcard-title">Infrastruttura solida</div>
+          <p class="hcard-desc">VPS, systemd, nginx, backup automatici. Non solo codice — sistemi che reggono.</p>
+          <div class="hcard-tag">Production-grade</div>
+        </div>
+      </div>
+      <div class="hcard">
+        <div class="hcard-num">03</div>
+        <div class="hcard-icon">🤖</div>
+        <div>
+          <div class="hcard-title">AI integrata</div>
+          <p class="hcard-desc">LLM, pipeline generative, automazioni intelligenti. Non buzzword — roba che funziona davvero.</p>
+          <div class="hcard-tag">Real AI</div>
+        </div>
+      </div>
+      <div class="hcard">
+        <div class="hcard-num">04</div>
+        <div class="hcard-icon">📊</div>
+        <div>
+          <div class="hcard-title">Costo fisso</div>
+          <p class="hcard-desc">Preventivo chiaro, nessuna sorpresa. Paghi quello che è stato concordato, punto.</p>
+          <div class="hcard-tag">No surprises</div>
+        </div>
+      </div>
+      <div class="hcard">
+        <div class="hcard-num">05</div>
+        <div class="hcard-icon">🇮🇹</div>
+        <div>
+          <div class="hcard-title">Mercato italiano</div>
+          <p class="hcard-desc">Conosco il contesto italiano — marketplace, community, PMI. Non un servizio generico.</p>
+          <div class="hcard-tag">Local expertise</div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 
-<section class="section" id="servizi">
-  <div class="section-header fade-in">
-    <div>
-      <div class="section-label">/ Cosa facciamo</div>
-      <h2 class="section-title">Servizi</h2>
-    </div>
-    <p class="section-desc">Soluzioni su misura. Consegna rapida. Zero fronzoli.</p>
+<section class="s" id="processo">
+  <div class="reveal">
+    <div class="s-label">/ Come lavoriamo</div>
+    <h2 class="s-title">Processo</h2>
   </div>
-  <div class="services-grid">
-    <div class="service-card fade-in">
-      <div class="service-num">01</div>
-      <span class="service-icon">⚡</span>
-      <div class="service-name">Bot Telegram custom</div>
-      <p class="service-desc">Bot avanzati con admin panel, database, notifiche, mini app e logica di business complessa.</p>
-      <div class="service-price"><span>Da 500€</span><span>One-shot →</span></div>
+  <div class="proc-list">
+    <div class="proc reveal">
+      <div class="proc-n">01</div>
+      <div><h3>Briefing</h3><p>Chiamata o chat per capire il problema e definire l'obiettivo concreto.</p></div>
+      <div class="proc-time">1–2 giorni</div>
     </div>
-    <div class="service-card fade-in">
-      <div class="service-num">02</div>
-      <span class="service-icon">🔄</span>
-      <div class="service-name">Automazioni & pipeline</div>
-      <p class="service-desc">Collega tool, elimina processi manuali ripetitivi. Integrazione API, webhook, schedulatori.</p>
-      <div class="service-price"><span>Da 800€</span><span>One-shot →</span></div>
+    <div class="proc reveal">
+      <div class="proc-n">02</div>
+      <div><h3>Proposta & preventivo</h3><p>Specifiche tecniche, tempistiche e costo fisso. Nessuna sorpresa.</p></div>
+      <div class="proc-time">48 ore</div>
     </div>
-    <div class="service-card fade-in">
-      <div class="service-num">03</div>
-      <span class="service-icon">🤖</span>
-      <div class="service-name">Pipeline AI</div>
-      <p class="service-desc">Integrazione di modelli AI nel tuo flusso di lavoro. Generazione contenuti, classificazione, analisi dati.</p>
-      <div class="service-price"><span>Da 1.000€</span><span>Progetto →</span></div>
+    <div class="proc reveal">
+      <div class="proc-n">03</div>
+      <div><h3>Sviluppo</h3><p>Build rapido con aggiornamenti costanti. Test su ambiente dedicato prima della consegna.</p></div>
+      <div class="proc-time">3–14 giorni</div>
     </div>
-    <div class="service-card fade-in">
-      <div class="service-num">04</div>
-      <span class="service-icon">🛠</span>
-      <div class="service-name">Manutenzione & retainer</div>
-      <p class="service-desc">Supporto continuativo, aggiornamenti, monitoring. Tu pensi al business, io penso alla tech.</p>
-      <div class="service-price"><span>Da 200€/mese</span><span>Abbonamento →</span></div>
-    </div>
-  </div>
-  <div class="stats-row">
-    <div class="stat-block fade-in"><span class="stat-num">1k<em>+</em></span><span class="stat-label">Fatturato clienti</span></div>
-    <div class="stat-block fade-in"><span class="stat-num">h<em>24</em></span><span class="stat-label">Bot attivi</span></div>
-    <div class="stat-block fade-in"><span class="stat-num">3<em>+</em></span><span class="stat-label">Anni esperienza</span></div>
-    <div class="stat-block fade-in"><span class="stat-num">IT<em>🇮🇹</em></span><span class="stat-label">Mercato principale</span></div>
-  </div>
-</section>
-
-<section class="section" id="processo">
-  <div class="section-header fade-in">
-    <div>
-      <div class="section-label">/ Come lavoriamo</div>
-      <h2 class="section-title">Processo</h2>
-    </div>
-  </div>
-  <div class="process-list">
-    <div class="process-item fade-in">
-      <div class="process-n">01</div>
-      <div class="process-text"><h3>Briefing</h3><p>Chiamata o chat per capire il problema e definire l'obiettivo concreto.</p></div>
-      <div class="process-tag">1–2 giorni</div>
-    </div>
-    <div class="process-item fade-in">
-      <div class="process-n">02</div>
-      <div class="process-text"><h3>Proposta & preventivo</h3><p>Specifiche tecniche, tempistiche e costo fisso. Nessuna sorpresa.</p></div>
-      <div class="process-tag">48 ore</div>
-    </div>
-    <div class="process-item fade-in">
-      <div class="process-n">03</div>
-      <div class="process-text"><h3>Sviluppo</h3><p>Build rapido con aggiornamenti costanti. Test su ambiente dedicato prima della consegna.</p></div>
-      <div class="process-tag">3–14 giorni</div>
-    </div>
-    <div class="process-item fade-in">
-      <div class="process-n">04</div>
-      <div class="process-text"><h3>Consegna & supporto</h3><p>Deploy in produzione, documentazione, e supporto post-lancio incluso.</p></div>
-      <div class="process-tag">Ongoing</div>
+    <div class="proc reveal">
+      <div class="proc-n">04</div>
+      <div><h3>Consegna & supporto</h3><p>Deploy in produzione, documentazione, e supporto post-lancio incluso.</p></div>
+      <div class="proc-time">Ongoing</div>
     </div>
   </div>
 </section>
 
-<section class="cta-section" id="contatto">
-  <div class="cta-bg"></div>
-  <div class="cta-title fade-in">Pronto ad<br><em>automatizzare?</em></div>
-  <p class="cta-sub fade-in">Lascia la tua email. Ti rispondo entro 24 ore.</p>
-  <a href="https://t.me/nexflow_it" target="_blank" class="btn-primary fade-in" style="display:inline-block;font-size:1rem;padding:1.1rem 2.5rem;">Scrivimi su Telegram →</a>
+<section class="cta-s" id="contatto">
+  <div class="cta-glow"></div>
+  <div class="cta-title reveal">Pronto ad<br><em>automatizzare?</em></div>
+  <p class="cta-sub reveal">Lascia un messaggio su Telegram. Rispondo entro 24 ore.</p>
+  <a href="https://t.me/nexflow_it" target="_blank" class="tg-btn reveal">
+    <svg class="tg-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12L7.543 13.9l-2.98-.924c-.647-.204-.66-.647.136-.958l11.65-4.495c.537-.194 1.006.131.545 1.698z"/></svg>
+    Scrivimi su Telegram
+  </a>
 </section>
 
 <footer>
-  <div class="footer-copy">© 2026 Nexflow. Tutti i diritti riservati.</div>
-  <ul class="footer-links">
+  <div class="f-copy">© 2026 Nexflow. Tutti i diritti riservati.</div>
+  <ul class="f-links">
     <li><a href="#">Privacy</a></li>
     <li><a href="#">Termini</a></li>
     <li><a href="https://t.me/nexflow_it" target="_blank">Telegram</a></li>
   </ul>
 </footer>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
-const cursor = document.getElementById('cursor');
-const ring = document.getElementById('cursor-ring');
-let mx = 0, my = 0, rx = 0, ry = 0;
-document.addEventListener('mousemove', e => {
-  mx = e.clientX; my = e.clientY;
-  cursor.style.transform = `translate(${mx-5}px,${my-5}px)`;
+// ── CURSOR ──────────────────────────────────────────────
+const cur = document.getElementById('cur');
+const dot = document.getElementById('cur-dot');
+const ring = document.getElementById('cur-ring');
+const trailCanvas = document.getElementById('cur-trail');
+const tCtx = trailCanvas.getContext('2d');
+let mx=0,my=0,rx=0,ry=0;
+const trail=[];
+function resizeTrail(){trailCanvas.width=window.innerWidth;trailCanvas.height=window.innerHeight}
+resizeTrail();window.addEventListener('resize',resizeTrail);
+document.addEventListener('mousemove',e=>{
+  mx=e.clientX;my=e.clientY;
+  cur.style.transform=`translate(${mx}px,${my}px)`;
+  trail.push({x:mx,y:my,a:1});
+  if(trail.length>28)trail.shift();
 });
-function animateRing() {
-  rx += (mx-rx)*0.12; ry += (my-ry)*0.12;
-  ring.style.transform = `translate(${rx-18}px,${ry-18}px)`;
-  requestAnimationFrame(animateRing);
-}
-animateRing();
-document.querySelectorAll('a,button').forEach(el => {
-  el.addEventListener('mouseenter', () => { ring.style.width='56px'; ring.style.height='56px'; ring.style.opacity='0.3'; });
-  el.addEventListener('mouseleave', () => { ring.style.width='36px'; ring.style.height='36px'; ring.style.opacity='0.6'; });
+document.querySelectorAll('a,button,.srv,.proc,.hcard').forEach(el=>{
+  el.addEventListener('mouseenter',()=>{ring.style.width='64px';ring.style.height='64px';ring.style.opacity='.2'});
+  el.addEventListener('mouseleave',()=>{ring.style.width='40px';ring.style.height='40px';ring.style.opacity='.5'});
 });
-const canvas = document.getElementById('bg');
-const ctx = canvas.getContext('2d');
-let W, H, particles = [];
-function resize() { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
-resize();
-window.addEventListener('resize', resize);
-class Particle {
-  constructor() { this.reset(); }
-  reset() {
-    this.x = Math.random()*W; this.y = Math.random()*H;
-    this.vx = (Math.random()-0.5)*0.3; this.vy = (Math.random()-0.5)*0.3;
-    this.r = Math.random()*1.5+0.5; this.alpha = Math.random()*0.5+0.1;
+function animCursor(){
+  rx+=(mx-rx)*.1;ry+=(my-ry)*.1;
+  ring.style.transform=`translate(${rx}px,${ry}px) translate(-50%,-50%)`;
+  tCtx.clearRect(0,0,trailCanvas.width,trailCanvas.height);
+  for(let i=1;i<trail.length;i++){
+    const t=trail[i],p=trail[i-1];
+    const prog=i/trail.length;
+    tCtx.beginPath();tCtx.moveTo(p.x,p.y);tCtx.lineTo(t.x,t.y);
+    tCtx.strokeStyle=`rgba(0,229,160,${prog*0.18})`;
+    tCtx.lineWidth=prog*3;tCtx.lineCap='round';tCtx.stroke();
   }
-  update() {
-    this.x += this.vx; this.y += this.vy;
-    if(this.x<0||this.x>W||this.y<0||this.y>H) this.reset();
-  }
-  draw() {
-    ctx.beginPath(); ctx.arc(this.x,this.y,this.r,0,Math.PI*2);
-    ctx.fillStyle=`rgba(0,229,160,${this.alpha})`; ctx.fill();
-  }
+  requestAnimationFrame(animCursor);
 }
-for(let i=0;i<80;i++) particles.push(new Particle());
-function drawConnections() {
-  for(let i=0;i<particles.length;i++) {
-    for(let j=i+1;j<particles.length;j++) {
-      const dx=particles[i].x-particles[j].x, dy=particles[i].y-particles[j].y;
-      const d=Math.sqrt(dx*dx+dy*dy);
-      if(d<120) {
-        ctx.beginPath(); ctx.moveTo(particles[i].x,particles[i].y); ctx.lineTo(particles[j].x,particles[j].y);
-        ctx.strokeStyle=`rgba(0,229,160,${0.12*(1-d/120)})`; ctx.lineWidth=0.5; ctx.stroke();
-      }
-    }
-  }
+animCursor();
+
+// ── THREE.JS HERO ────────────────────────────────────────
+const heroCanvas = document.getElementById('three-canvas');
+const renderer = new THREE.WebGLRenderer({canvas:heroCanvas,alpha:true,antialias:true});
+renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
+renderer.setSize(window.innerWidth,window.innerHeight);
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(60,window.innerWidth/window.innerHeight,.1,100);
+camera.position.z=4;
+
+// Torus knot main
+const torusGeo = new THREE.TorusKnotGeometry(1.2,.35,180,20,2,3);
+const torusMat = new THREE.MeshStandardMaterial({
+  color:0x00e5a0,wireframe:true,opacity:.18,transparent:true
+});
+const torus = new THREE.Mesh(torusGeo,torusMat);
+scene.add(torus);
+
+// Second torus
+const t2geo = new THREE.TorusKnotGeometry(.8,.15,120,16,3,5);
+const t2mat = new THREE.MeshStandardMaterial({color:0x7b5cfa,wireframe:true,opacity:.12,transparent:true});
+const torus2 = new THREE.Mesh(t2geo,t2mat);
+scene.add(torus2);
+
+// Icosahedron
+const icoGeo = new THREE.IcosahedronGeometry(2.5,1);
+const icoMat = new THREE.MeshStandardMaterial({color:0x00e5a0,wireframe:true,opacity:.04,transparent:true});
+const ico = new THREE.Mesh(icoGeo,icoMat);
+scene.add(ico);
+
+// Particles
+const pCount=1200;
+const pGeo=new THREE.BufferGeometry();
+const pPos=new Float32Array(pCount*3);
+for(let i=0;i<pCount*3;i++)pPos[i]=(Math.random()-0.5)*12;
+pGeo.setAttribute('position',new THREE.BufferAttribute(pPos,3));
+const pMat=new THREE.PointsMaterial({color:0x00e5a0,size:.025,transparent:true,opacity:.35});
+const points=new THREE.Points(pGeo,pMat);
+scene.add(points);
+
+const light1=new THREE.DirectionalLight(0x00e5a0,.8);light1.position.set(5,5,5);scene.add(light1);
+const light2=new THREE.DirectionalLight(0x7b5cfa,.4);light2.position.set(-5,-5,-5);scene.add(light2);
+scene.add(new THREE.AmbientLight(0xffffff,.1));
+
+let targetRX=0,targetRY=0,curRX=0,curRY=0;
+document.addEventListener('mousemove',e=>{
+  targetRX=(e.clientY/window.innerHeight-.5)*1.2;
+  targetRY=(e.clientX/window.innerWidth-.5)*1.2;
+});
+
+window.addEventListener('resize',()=>{
+  camera.aspect=window.innerWidth/window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth,window.innerHeight);
+});
+
+let t=0;
+function animThree(){
+  requestAnimationFrame(animThree);
+  t+=.004;
+  curRX+=(targetRX-curRX)*.04;
+  curRY+=(targetRY-curRY)*.04;
+  torus.rotation.x=t*.6+curRX;
+  torus.rotation.y=t*.4+curRY;
+  torus2.rotation.x=-t*.5+curRX*.8;
+  torus2.rotation.y=t*.7-curRY*.8;
+  ico.rotation.x=t*.15;
+  ico.rotation.y=t*.2;
+  points.rotation.y=t*.05;
+  renderer.render(scene,camera);
 }
-function loop() { ctx.clearRect(0,0,W,H); particles.forEach(p=>{p.update();p.draw();}); drawConnections(); requestAnimationFrame(loop); }
-loop();
-const items = ['Bot Telegram','Automazioni','Pipeline AI','Trading Bot','Mini App','Infrastruttura','Webhook','Scheduler','Dashboard'];
-const track = document.getElementById('marquee');
-const doubled = [...items,...items,...items,...items];
-track.innerHTML = doubled.map(t=>`<div class="marquee-item"><span></span>${t}</div>`).join('');
-const observer = new IntersectionObserver(entries => {
-  entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); });
-}, {threshold: 0.1});
-document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+animThree();
+
+// ── MARQUEE ──────────────────────────────────────────────
+const items=['Bot Telegram','Automazioni','Pipeline AI','Trading Bot','Mini App','Infrastruttura','Webhook','Scheduler','Dashboard','Python','Flask','SQLite'];
+const mq=document.getElementById('mq');
+const dbl=[...items,...items,...items,...items];
+mq.innerHTML=dbl.map(t=>`<div class="mq-item"><span class="mq-dot"></span>${t}</div>`).join('');
+
+// ── HORIZONTAL SCROLL ────────────────────────────────────
+const hOuter=document.getElementById('hscroll');
+const hTrack=document.getElementById('htrack');
+function updateHScroll(){
+  const rect=hOuter.getBoundingClientRect();
+  const progress=Math.max(0,Math.min(1,-rect.top/(rect.height-window.innerHeight)));
+  const maxX=hTrack.scrollWidth-window.innerWidth+120;
+  hTrack.style.transform=`translateX(${-progress*maxX}px)`;
+}
+window.addEventListener('scroll',updateHScroll,{passive:true});
+
+// ── REVEAL ON SCROLL ─────────────────────────────────────
+const revObs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');revObs.unobserve(e.target)}});
+},{threshold:.12});
+document.querySelectorAll('.reveal,.reveal-l').forEach(el=>revObs.observe(el));
 </script>
 </body>
 </html>
